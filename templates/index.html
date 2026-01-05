@@ -5,20 +5,13 @@
 </head>
 <body>
     <h2>Mental Wellness Reflection Bot</h2>
-
-    <form method="POST">
-        <p>
-            <textarea name="user_text" rows="4" cols="50"
-                placeholder="How are you feeling today?"></textarea>
-        </p>
-
-        <p>
-            <input type="text" name="image_url"
-                placeholder="Paste an image URL (optional)" size="50">
-        </p>
-
-        <button type="submit">Send</button>
-    </form>
+<form method="POST">
+  <textarea name="user_text" placeholder="Type how you're feeling..." required></textarea>
+  <br>
+  <input type="text" name="image_url" placeholder="Optional image URL">
+  <br>
+  <button type="submit">Send</button>
+</form>
 
     {% if bot_reply %}
         <h3>Bot:</h3>
