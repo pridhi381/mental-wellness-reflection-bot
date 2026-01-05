@@ -6,6 +6,8 @@ app = Flask(__name__)
 
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
+if not API_KEY:
+    raise RuntimeError("OPENROUTER_API_KEY is not set")
 
 SYSTEM_PROMPT = (
     "You are a mental wellness reflection chatbot. "
@@ -42,13 +44,8 @@ def chat_with_bot(user_message):
         return f"API error: {result}"
 
     bot_reply = result["choices"][0]["message"]["content"]
-
-    conversation_history.append(
-        {"role": "assistant", "content": bot_reply}
-    )
-
+    conversation_history.append({"role": "assistant", "content": bot_reply})
     return bot_reply
-
 
 def reflect_on_image(image_url):
     payload = {
@@ -107,3 +104,4 @@ def index():
 
 if __name__ == "__main__":
     app.run()
+
