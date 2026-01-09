@@ -5,13 +5,23 @@
 </head>
 <body>
     <h2>Mental Wellness Reflection Bot</h2>
-<form method="POST" enctype="multipart/form-data">
-  <textarea name="user_text" placeholder="Type how you're feeling..." required></textarea>
-  <br>
-<input type="file" name="image_file" accept="image/*">
-  <br>
-  <button type="submit">Send</button>
-</form>
+
+    <form method="POST" enctype="multipart/form-data">
+        <textarea 
+            name="user_text" 
+            placeholder="Type how you're feeling..." 
+            rows="4" 
+            cols="50"
+            required>
+        </textarea>
+        <br><br>
+
+        <label>Optional: Upload an image</label><br>
+        <input type="file" name="image_file" accept="image/*">
+        <br><br>
+
+        <button type="submit">Send</button>
+    </form>
 
     {% if bot_reply %}
         <h3>Bot:</h3>
