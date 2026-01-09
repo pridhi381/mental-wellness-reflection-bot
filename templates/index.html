@@ -5,10 +5,10 @@
 </head>
 <body>
     <h2>Mental Wellness Reflection Bot</h2>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
   <textarea name="user_text" placeholder="Type how you're feeling..." required></textarea>
   <br>
-  <input type="text" name="image_url" placeholder="Optional image URL">
+<input type="file" name="image_file" accept="image/*">
   <br>
   <button type="submit">Send</button>
 </form>
