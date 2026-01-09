@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request
 import requests
 import os
+import base64
 
 app = Flask(__name__)
 
+# OpenRouter API config
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-if not API_KEY:
-    raise RuntimeError("OPENROUTER_API_KEY is not set")
 
 SYSTEM_PROMPT = (
     "You are a mental wellness reflection chatbot. "
@@ -26,13 +26,14 @@ headers = {
     "X-Title": "Mental Wellness Reflection Bot"
 }
 
+# -------- TEXT CHAT --------
 def chat_with_bot(user_message):
     conversation_history.append(
         {"role": "user", "content": user_message}
     )
 
     payload = {
-        "model": "openai/gpt-4o-mini",
+        "model": "openai/gpt-3.5-turbo",
         "messages": conversation_history,
         "temperature": 0.7
     }
@@ -41,13 +42,19 @@ def chat_with_bot(user_message):
     result = response.json()
 
     if "choices" not in result:
-        return f"API error: {result}"
+        return "I'm here, but something went wrong. Please try again."
 
     bot_reply = result["choices"][0]["message"]["content"]
-    conversation_history.append({"role": "assistant", "content": bot_reply})
+
+    conversation_history.append(
+        {"role": "assistant", "content": bot_reply}
+    )
+
     return bot_reply
 
-def reflect_on_image(image_url):
+
+# -------- IMAGE REFLECTION (UPLOAD) --------
+def reflect_on_uploaded_image(image_base64):
     payload = {
         "model": "openai/gpt-4o-mini",
         "messages": [
@@ -63,8 +70,8 @@ def reflect_on_image(image_url):
                 "content": [
                     {"type": "text", "text": "Please reflect on this image."},
                     {
-                        "type": "image_url",
-                        "image_url": {"url": image_url}
+                        "type": "image_base64",
+                        "image_base64": image_base64
                     }
                 ]
             }
@@ -80,6 +87,7 @@ def reflect_on_image(image_url):
     return result["choices"][0]["message"]["content"]
 
 
+# -------- ROUTE --------
 @app.route("/", methods=["GET", "POST"])
 def index():
     bot_reply = ""
@@ -87,13 +95,15 @@ def index():
 
     if request.method == "POST":
         user_text = request.form.get("user_text")
-        image_url = request.form.get("image_url")
+        image_file = request.files.get("image_file")
 
         if user_text:
             bot_reply = chat_with_bot(user_text)
 
-        if image_url:
-            image_reply = reflect_on_image(image_url)
+        if image_file and image_file.filename != "":
+            image_bytes = image_file.read()
+            image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+            image_reply = reflect_on_uploaded_image(image_base64)
 
     return render_template(
         "index.html",
@@ -104,4 +114,3 @@ def index():
 
 if __name__ == "__main__":
     app.run()
-
